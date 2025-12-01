@@ -1,35 +1,11 @@
 <?php
 
-function example() {
-    return [
-        'L68',
-        'L30',
-        'R48',
-        'L5',
-        'R60',
-        'L55',
-        'L1',
-        'L99',
-        'R14',
-        'L82',
-    ];
-}
-
-function puzzle() {
-    $input = explode("\n", file_get_contents('day01-input'));
-
-    return array_map(
-        callback: trim(...),
-        array: $input,
-    );
-}
+require_once dirname(__DIR__) . '/load-file.php';
+$input = loadFile(__DIR__ . '/real-input');
 
 $start = 50;
 $zeroCount = 0;
 
-$input = puzzle(); 
-
-echo "start: $start\n";
 foreach($input as $instruction) {
     $dir = $instruction[0];
     $amt = (int) substr($instruction, 1);
