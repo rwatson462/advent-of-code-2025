@@ -1,7 +1,6 @@
 <?php
 
-require_once dirname(__DIR__) . '/load-file.php';
-$input = loadFile(__DIR__ . '/real-input');
+$input = file(__DIR__ . '/real-input');
 
 $start = 50;
 $zeroCount = 0;

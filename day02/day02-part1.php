@@ -1,7 +1,6 @@
 <?php
 
-require_once dirname(__DIR__) . '/load-file.php';
-$input = loadFile(__DIR__ . '/real-input');
+$input = file(__DIR__ . '/real-input');
 $input = array_merge(...array_map(fn ($line) => explode(',', $line), $input));
 
 $answer = 0;
@@ -9,7 +8,7 @@ $answer = 0;
 foreach ($input as $line) {
     [$first, $last] = explode('-', $line);
 
-    // for each "number" check if all digits are the same
+    // For each "number" check if it's made of 2 equal halves of the same number (e.g. 11 = 1 + 1)
     for ($i = (int)$first; $i <= (int)$last; $i++) {
         $str = (string)$i;
 
