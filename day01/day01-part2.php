@@ -9,35 +9,15 @@ foreach($input as $instruction) {
     $dir = $instruction[0];
     $amt = (int) substr($instruction, 1);
 
-    // if dir === 'L', subtract
-    // if dir === 'R', add
-    if ($dir === 'L') {
-        $amt *= -1;
-    }
+    // just turn the knob 1 click at a time and check for zero after each click
+    while ($amt > 0) {
+        $start += $dir === 'L' ? -1 : 1;
+        $start = ($start + 100) % 100;
+        $amt --;
 
-    // hack to stop us counting twice when we're ON zero then go below it
-    if ($start === 0 && $start + $amt < 0) {
-        $zeroCount--;
-    }
-
-    $start += $amt;
-    
-    // wrap to between 0 and 99
-    while ($start < 0) {
-        $start += 100;
-        $zeroCount ++;
-    }
-    while ($start > 100){
-        $start -= 100;
-        $zeroCount ++;
-    }
-    // hack to stop us counting twice when we're ON 100 (zero) exactly
-    if ($start === 100) {
-        $start = 0;
-    }
-
-    if ($start === 0) {
-        $zeroCount++;
+        if ($start === 0) {
+            $zeroCount++;
+        }
     }
 }
 
