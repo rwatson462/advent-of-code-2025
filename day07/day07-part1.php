@@ -5,36 +5,30 @@ $input = array_map(
     file(__DIR__ . '/real-input'),
 );
 
-function printGrid(array $grid): void
-{
-    echo implode("\n", array_map(fn(array $row) => implode('', $row), $grid)) . "\n\n";
-}
-
-$splits = 0;
 const LASER = 'S';
 const SPLITTER = '^';
 const SPACE = '.';
 
-for ($cur = 1; $cur < count($input); $cur++) {
-    $cols = count($input[$cur]);
-    $prev = $cur-1;
-    // find any laser positions above (S) and pull them down to the current row
-    // if the space they would go into is a splitter (^):
-    //    place lasers either side of the splitter
-    //    increment the splitter counter
+$answer = 0;
+$cols = count($input[0]);
+
+// start tracking from the second row so we always have a previous row
+for ($row = 1; $row < count($input); $row++) {
+    $prevRow = $row-1;
+
     for ($col = 0; $col < $cols; $col++) {
-        if ($input[$prev][$col] === LASER) {
-            if ($input[$cur][$col] === SPLITTER) {
-                $input[$cur][$col - 1] = LASER;
-                $input[$cur][$col + 1] = LASER;
-                $splits++;
+        if ($input[$prevRow][$col] === LASER) {
+            if ($input[$row][$col] === SPLITTER) {
+                $input[$row][$col - 1] = LASER;
+                $input[$row][$col + 1] = LASER;
+                $answer++;
                 continue;
             }
-            if ($input[$cur][$col] === SPACE) {
-                $input[$cur][$col] = LASER;
+            if ($input[$row][$col] === SPACE) {
+                $input[$row][$col] = LASER;
             }
         }
     }
 }
 
-echo "Answer:  $splits\n";
+echo "Answer:  $answer\n";

@@ -5,30 +5,25 @@ $input = array_map(
     file(__DIR__ . '/real-input'),
 );
 
-function printGrid(array $grid): void
-{
-    echo implode("\n", array_map(fn(array $row) => implode('', $row), $grid)) . "\n\n";
-}
-
 const LASER = 'S';
 const SPLITTER = '^';
 const SPACE = '.';
 
 $laserPowers = [];
+$cols = count($input[0]);
 
-for ($cur = 1; $cur < count($input); $cur++) {
-    $cols = count($input[$cur]);
-    $prev = $cur-1;
+for ($row = 1; $row < count($input); $row++) {
+    $prevRow = $row-1;
 
     for ($col = 0; $col < $cols; $col++) {
-        if ($input[$prev][$col] === LASER) {
-            if ($input[$cur][$col] === SPLITTER) {
+        if ($input[$prevRow][$col] === LASER) {
+            if ($input[$row][$col] === SPLITTER) {
                 // get the power of the laser coming into the splitter
                 $power = $laserPowers[$col] ?? 1;
 
                 // mark the position of the split laser
-                $input[$cur][$col - 1] = LASER;
-                $input[$cur][$col + 1] = LASER;
+                $input[$row][$col - 1] = LASER;
+                $input[$row][$col + 1] = LASER;
 
                 // add the laser's power to our tracker
                 $laserPowers[$col-1] = ($laserPowers[$col-1] ?? 0) + $power;
@@ -38,8 +33,8 @@ for ($cur = 1; $cur < count($input); $cur++) {
                 unset($laserPowers[$col]);
                 continue;
             }
-            if ($input[$cur][$col] === SPACE) {
-                $input[$cur][$col] = LASER;
+            if ($input[$row][$col] === SPACE) {
+                $input[$row][$col] = LASER;
             }
         }
     }
