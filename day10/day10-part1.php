@@ -1,5 +1,7 @@
 <?php
 
+$filename = __DIR__ . '/real-input';
+
 $input = array_map(
     function (string $line) {
         $line = trim($line);
@@ -20,7 +22,7 @@ $input = array_map(
             // $joltageRequirements,
         ];
     },
-    file(__DIR__ . '/real-input'),
+    file($filename),
 );
 
 function applyButton(string $in, array $button): string {
@@ -33,29 +35,42 @@ function applyButton(string $in, array $button): string {
     return $in;
 }
 
-function solve(int $count, string $lights, string $targetLights, array $buttons, int $buttonId): int|false {
-    if ($count > 10) return false;
+function solve(string $lights, string $targetLights, array $node, int $depth = 0): int|false {
+    if (isset($node['value'])) {
+        $lights = applyButton($lights, $node['value']);
+    }
 
-    $button = $buttons[$buttonId];
-
-    $lights = applyButton($lights, $button);
     if ($lights === $targetLights) {
-        return $count;
+        return $depth;
+    }
+
+    if (!isset($node['children'])) {
+        return false;
     }
 
     $lowest = PHP_INT_MAX;
-    foreach($buttons as $id => $_) {
-        if ($id === $buttonId) {
-            continue;
-        }
-
-        $min = solve($count+1, $lights, $targetLights, $buttons, $id);
-        if ($min !== false) {
-            $lowest = min($lowest, $min);
-        }
+    foreach($node['children'] as $child) {
+        $lowest = min(
+            $lowest,
+            solve($lights, $targetLights, $child, $depth + 1) ?: PHP_INT_MAX
+        );
     }
 
     return $lowest;
+}
+
+function tree(array &$node, array $items): void {
+    // initialise children array key
+    if (count($items) > 0 && ! isset($node['children'])) $node['children'] = [];
+
+    $new = [...$items];
+    while (($item = array_shift($new)) !== null) {
+        $next = [
+            'value' => $item,
+        ];
+        tree($next, $new);
+        $node['children'][] = $next;
+    }
 }
 
 $answer = 0;
@@ -66,16 +81,13 @@ foreach ($input as $line) {
     $targetLights = $line[0];
     $buttons = $line[1];
 
-    $lowest = PHP_INT_MAX;
-    foreach ($buttons as $id => $_) {
-        $count = solve(1, $lights, $targetLights, $buttons, $id);
-        if ($count !== false) {
-            $lowest = min($lowest, $count);
-        }
-    }
+    $root = [];
+    tree($root, $buttons);
 
-    echo "Solved in: $lowest\n";
-    $answer += $lowest;
+    // traverse the tree to find the correct set of buttons to press
+    $solution = solve($lights, $targetLights, $root);
+
+    $answer += $solution;
 }
 
 echo "Answer: $answer\n";
